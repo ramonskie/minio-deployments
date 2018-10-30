@@ -1,0 +1,25 @@
+pipeline:
+  name: minio-deployments
+  git:
+    owner: ((github.owner))
+    repo:  ((github.repo))
+    private_key: ((github.private))
+  email:
+  vault:
+    url:    ((vault_url))
+    secret: ((vault_secret))
+    role: none
+    verify: no
+  stemcells:
+    default: ((bosh_stemcell))
+  boshes:
+    bucc:
+      url:      ((bosh_environment))
+      ca_cert:  ((bosh_ca_cert))
+      username: ((bosh_client))
+      password: ((bosh_client_secret))
+      stemcells: [ default ]
+  layouts:
+    default: |+
+      auto *bucc
+      bucc
