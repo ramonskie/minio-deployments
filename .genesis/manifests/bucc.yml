@@ -1,0 +1,137 @@
+azs:
+- name: z1
+- name: z2
+- name: z3
+compilation:
+  az: z1
+  network: default
+  reuse_compilation_vms: true
+  vm_type: minio
+  workers: 5
+disk_types:
+- disk_size: 10240
+  name: minio
+exodus:
+  dated: 2018-10-30 23:50:33 +0000
+  deployer: root
+  kit_name: minio
+  kit_version: 0.3.0
+  self-signed: true
+  url: https://10.244.0.134:443
+  vault_base: secret/bucc/minio
+  version: 2.6.12
+instance_groups:
+- azs:
+  - z1
+  instances: 1
+  jobs:
+  - name: minio-server
+    properties:
+      ca_cert: REDACTED
+      credential:
+        accesskey: REDACTED
+        secretkey: REDACTED
+      dns_alias: minio.minio.bucc-minio.bosh
+      port: 443
+      server_cert: REDACTED
+      server_key: REDACTED
+    provides:
+      minio-server:
+        as: minio-link
+    release: minio
+    templates:
+    - name: minio-server
+  name: minio
+  networks:
+  - name: minio
+  persistent_disk_type: minio
+  stemcell: default
+  vm_type: default
+- azs:
+  - z1
+  instances: 1
+  jobs:
+  - consumes:
+      minio:
+        from: minio-link
+    name: smoke-tests
+    release: minio
+    templates:
+    - name: smoke-tests
+  lifecycle: errand
+  name: tests
+  networks:
+  - name: minio
+  post_deploy: true
+  properties:
+    debug: false
+  stemcell: default
+  vm_type: default
+kit:
+  features:
+  - self-signed-cert
+  name: minio
+  version: 0.3.0
+meta:
+  default:
+    azs:
+    - z1
+    domain_base: minio.minio.bucc-minio.bosh
+  vault: secret/bucc/minio
+name: bucc-minio
+networks:
+- name: default
+  subnets:
+  - azs:
+    - z1
+    - z2
+    - z3
+    dns:
+    - 8.8.8.8
+    gateway: 10.244.0.1
+    range: 10.244.0.0/24
+    reserved:
+    - 10.244.0.129 - 10.244.0.254
+    static: []
+  type: manual
+- name: minio
+  subnets:
+  - azs:
+    - z1
+    - z2
+    - z3
+    dns:
+    - 8.8.8.8
+    gateway: 10.244.0.1
+    range: 10.244.0.0/24
+    reserved:
+    - 10.244.0.1 - 10.244.0.126
+    static:
+    - 10.244.0.134
+  type: manual
+params:
+  env: bucc
+  external_domain: 10.244.0.134
+  name: bucc-minio
+  network: minio
+  num_minio_nodes: 1
+  vault: bucc/minio
+releases:
+- name: minio
+  sha1: 3a5ae84f8b2be9ee640d545c489633e36c0674dd
+  url: https://bosh.io/d/github.com/minio/minio-boshrelease?v=2018-06-08T03-49-38Z
+  version: 2018-06-08T03-49-38Z
+stemcells:
+- alias: default
+  os: ubuntu-trusty
+  version: latest
+update:
+  canaries: 1
+  canary_watch_time: 5000-600000
+  max_errors: 1
+  max_in_flight: 1
+  serial: false
+  update_watch_time: 5000-600000
+vm_types:
+- name: default
+- name: minio
