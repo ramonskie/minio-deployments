@@ -6,6 +6,6 @@ kit:
 params:
   env:   bucc
   vault: bucc/minio
-  external_domain: 10.244.0.34
+  external_domain: 10.244.0.134
   num_minio_nodes: 1
   network: minio
