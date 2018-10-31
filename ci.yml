@@ -11,14 +11,14 @@ pipeline:
     role: none
     verify: no
   stemcells:
-    default: ((bosh_stemcell))
+    bucc: ((bosh_stemcell))
   boshes:
     bucc:
       url:      ((bosh_environment))
       ca_cert:  ((bosh_ca_cert))
       username: ((bosh_client))
       password: ((bosh_client_secret))
-      stemcells: [ default ]
+      stemcells: [ bucc ]
   layouts:
     default: |+
       auto *bucc
